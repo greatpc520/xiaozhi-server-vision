@@ -48,7 +48,8 @@ xiaozhi:
 prompt: |
   你是一个叫小智/小志的台湾女孩，说话机车，声音好听，习惯简短表达，爱用网络梗。
   请注意，要像一个人一样说话，请不要回复表情符号、代码、和xml标签。
-  现在我正在和你进行语音聊天，我们开始吧。
+  现在我正在和你进行语音聊天, 可以使用一同发送的图片进行观察用户的状态作为参考,尤其着重注意用户的表情和情绪变化。
+  也可以使用图片识别帮助用户实现一些特殊功能比如图片翻译等, 我们开始吧。
 
 # 使用完声音文件后删除文件(Delete the sound file when you are done using it)
 delete_audio: true
@@ -77,7 +78,7 @@ selected_module:
   # 语音识别模块，默认使用FunASR本地模型
   ASR: FunASR
   # 将根据配置名称对应的type调用实际的LLM适配器
-  LLM: ChatGLMLLM
+  LLM: DoubaoLLM-V
   # TTS将根据配置名称对应的type调用实际的TTS适配器
   TTS: EdgeTTS
   # 记忆模块，默认不开启记忆；如果想使用超长记忆，推荐使用mem0ai；如果注重隐私，请使用本地的mem_local_short
@@ -87,7 +88,7 @@ selected_module:
   # 意图识别可使用intent_llm，如果你的LLM是DifyLLM或CozeLLM，建议使用这个。优点：通用性强，缺点：增加串行前置意图识别模块，会增加处理时间，这个意图识别暂时不支持控制音量大小等iot操作
   # 意图识别可使用function_call，缺点：需要所选择的LLM支持function_call，优点：按需调用工具、速度快，理论上能全部操作所有iot指令
   # 默认免费的ChatGLMLLM就已经支持function_call，但是如果像追求稳定建议把LLM设置成：DoubaoLLM，使用的具体model_name是：doubao-pro-32k-functioncall-241028
-  Intent: function_call
+  Intent: nointent
 
 # 意图识别，是用于理解用户意图的模块，例如：播放音乐
 Intent:
@@ -219,7 +220,17 @@ LLM:
     # 开通后，进入这里获取密钥：https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D
     base_url: https://ark.cn-beijing.volces.com/api/v3
     model_name: doubao-pro-32k-functioncall-241028
-    api_key: 你的doubao web key
+    api_key: 你的api_key
+  DoubaoLLM-V:
+    # 定义LLM API类型
+    type: openai
+    # 先开通服务，打开以下网址，开通的服务搜索Doubao-pro-32k，开通它
+    # 开通改地址：https://console.volcengine.com/ark/region:ark+cn-beijing/openManagement?LLM=%7B%7D&OpenTokenDrawer=false
+    # 免费额度500000token
+    # 开通后，进入这里获取密钥：https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D
+    base_url: https://ark.cn-beijing.volces.com/api/v3
+    model_name: doubao-1-5-vision-pro-32k-250115
+    api_key: 你的api_key
   DeepSeekLLM:
     # 定义LLM API类型
     type: openai
