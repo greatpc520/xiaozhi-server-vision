@@ -220,7 +220,7 @@ LLM:
     # 开通后，进入这里获取密钥：https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D
     base_url: https://ark.cn-beijing.volces.com/api/v3
     model_name: doubao-pro-32k-functioncall-241028
-    api_key: 你的api_key
+    api_key: 839b5fd5-0949-4ee1-8d25-02e4de087ecc
   DoubaoLLM-V:
     # 定义LLM API类型
     type: openai
@@ -230,7 +230,7 @@ LLM:
     # 开通后，进入这里获取密钥：https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D
     base_url: https://ark.cn-beijing.volces.com/api/v3
     model_name: doubao-1-5-vision-pro-32k-250115
-    api_key: 你的api_key
+    api_key: 839b5fd5-0949-4ee1-8d25-02e4de087ecc
   DeepSeekLLM:
     # 定义LLM API类型
     type: openai

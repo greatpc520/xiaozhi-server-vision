@@ -22,13 +22,12 @@ class LLMProvider(LLMProviderBase):
         else:
             self.base_url = config.get("url")
         self.max_tokens = config.get("max_tokens", 500)
-
+        print("self.api_key", self.api_key)
         check_model_key("LLM", self.api_key)
         self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
 
-    def response(self, session_id, dialogue, conn = None):
-        url = f'http://{conn.client_ip}/jpg'  
-        response = requests.get(url, timeout=2000)
+    def response(self, session_id, dialogue):
+        url = 'http://192.168.248.171/jpg'  
         response = requests.get(url, timeout=2000)
         use_pic = False
         if response.status_code == 200:  
@@ -86,7 +85,7 @@ class LLMProvider(LLMProviderBase):
                         is_active = True
                         content = content.split('</think>')[-1]
                     if is_active:
-                        print(content)
+                        print("content", content, end="")
                         yield content
 
         except Exception as e:

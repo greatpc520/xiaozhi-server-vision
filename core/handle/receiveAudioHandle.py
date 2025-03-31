@@ -46,7 +46,8 @@ async def handleAudioMessage(conn, audio):
 
 async def startToChat(conn, text):
     # 首先进行意图分析
-    intent_handled = await handle_user_intent(conn, text)
+    # intent_handled = await handle_user_intent(conn, text)
+    intent_handled = False
     
     if intent_handled:
         # 如果意图已被处理，不再进行聊天

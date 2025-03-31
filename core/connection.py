@@ -280,8 +280,7 @@ class ConnectionHandler:
             self.logger.bind(tag=TAG).debug(f"记忆内容: {memory_str}")
             llm_responses = self.llm.response(
                 self.session_id,
-                self.dialogue.get_llm_dialogue_with_memory(memory_str),
-                self
+                self.dialogue.get_llm_dialogue_with_memory(memory_str)
             )
         except Exception as e:
             self.logger.bind(tag=TAG).error(f"LLM 处理出错 {query}: {e}")
