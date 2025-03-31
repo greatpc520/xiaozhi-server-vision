@@ -26,8 +26,8 @@ class LLMProvider(LLMProviderBase):
         check_model_key("LLM", self.api_key)
         self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
 
-    def response(self, session_id, dialogue):
-        url = 'http://192.168.248.171/jpg'  
+    def response(self, session_id, dialogue, conn = None):
+        url = f'http://{conn.client_ip}/jpg'  
         response = requests.get(url, timeout=2000)
         response = requests.get(url, timeout=2000)
         use_pic = False
@@ -49,7 +49,6 @@ class LLMProvider(LLMProviderBase):
             #原图片转base64
             base64_image = encode_image(image_path)
         
-            print(dialogue)
             last_message = dialogue[-1]
             content_text = last_message.get("content", "")
             content_img = [
@@ -87,6 +86,7 @@ class LLMProvider(LLMProviderBase):
                         is_active = True
                         content = content.split('</think>')[-1]
                     if is_active:
+                        print(content)
                         yield content
 
         except Exception as e:
