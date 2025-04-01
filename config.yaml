@@ -88,7 +88,7 @@ selected_module:
   # 意图识别可使用intent_llm，如果你的LLM是DifyLLM或CozeLLM，建议使用这个。优点：通用性强，缺点：增加串行前置意图识别模块，会增加处理时间，这个意图识别暂时不支持控制音量大小等iot操作
   # 意图识别可使用function_call，缺点：需要所选择的LLM支持function_call，优点：按需调用工具、速度快，理论上能全部操作所有iot指令
   # 默认免费的ChatGLMLLM就已经支持function_call，但是如果像追求稳定建议把LLM设置成：DoubaoLLM，使用的具体model_name是：doubao-pro-32k-functioncall-241028
-  Intent: nointent
+  Intent: intent_llm
 
 # 意图识别，是用于理解用户意图的模块，例如：播放音乐
 Intent:
@@ -220,7 +220,7 @@ LLM:
     # 开通后，进入这里获取密钥：https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D
     base_url: https://ark.cn-beijing.volces.com/api/v3
     model_name: doubao-pro-32k-functioncall-241028
-    api_key: 839b5fd5-0949-4ee1-8d25-02e4de087ecc
+    api_key: 你的API密钥
   DoubaoLLM-V:
     # 定义LLM API类型
     type: openai
@@ -230,7 +230,7 @@ LLM:
     # 开通后，进入这里获取密钥：https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D
     base_url: https://ark.cn-beijing.volces.com/api/v3
     model_name: doubao-1-5-vision-pro-32k-250115
-    api_key: 839b5fd5-0949-4ee1-8d25-02e4de087ecc
+    api_key: 你的API密钥
   DeepSeekLLM:
     # 定义LLM API类型
     type: openai

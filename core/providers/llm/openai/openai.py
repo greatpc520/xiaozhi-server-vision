@@ -26,8 +26,11 @@ class LLMProvider(LLMProviderBase):
         check_model_key("LLM", self.api_key)
         self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
 
-    def response(self, session_id, dialogue):
-        url = 'http://192.168.248.171/jpg'  
+    def response(self, session_id, dialogue, conn = None):
+        if conn is not None:
+            url = f"http://{conn.client_ip}/jpg"
+        else:
+            url = 'http://192.168.248.171/jpg'  # 改成你自己的板子ip
         response = requests.get(url, timeout=2000)
         use_pic = False
         if response.status_code == 200:  
