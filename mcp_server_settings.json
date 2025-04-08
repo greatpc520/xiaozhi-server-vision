@@ -26,6 +26,17 @@
       "command": "npx",
       "args": ["-y", "@simonb97/server-win-cli"],
       "link": "https://github.com/SimonB97/win-cli-mcp-server"
+    },
+    "weather-mcp":{
+      "command": "E:/JHY/python/weather-mcp/.venv/Scripts/python.exe",
+      "args":[
+        "E:/JHY/python/weather-mcp/server.py"
+      ],
+      "env":{
+        "BASE_URL": "https://api.deepseek.com",
+        "MODEL": "deepseek-chat",
+        "OPENAI_API_KEY": "sk-16ed1c1c9a934c1393425430a4f7d26c"
+      }
     }
   }
 }
