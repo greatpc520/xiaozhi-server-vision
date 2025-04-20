@@ -78,18 +78,18 @@ class LLMProvider(LLMProviderBase):
 
                 # 保存文件
                 try:
-                    file_path = os.path.join(self.server.upload_dir, "image_now.jpg")
-                    
-                    with open(file_path, 'wb') as f:
+                    # 保存为固定文件名
+                    fixed_path = os.path.join(self.server.upload_dir, "image_now.jpg")
+                    with open(fixed_path, 'wb') as f:
                         f.write(image_data)
+
                     # 保存为固定文件名
                     fixed_path = os.path.join(self.server.upload_dir, "image.jpg")
                     with open(fixed_path, 'wb') as f:
                         f.write(image_data)
-                    print(f"图片已保存: {file_path}")
+                    print(f"图片已保存: tmp/image_now.jpg")
                 except Exception as e:
                     self.send_error(500, f"保存失败: {str(e)}")
-
 
         # 创建服务器实例
         server_address = ('', 8003)
