@@ -5,6 +5,15 @@ from core.providers.llm.base import LLMProviderBase
 import requests
 import base64
 import cv2
+import os
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from datetime import datetime
+from core.handle.iotHandle import send_iot_conn
+import asyncio
+import uuid
+import threading
+import time
+
 
 TAG = __name__
 logger = setup_logging()
@@ -12,6 +21,7 @@ logger = setup_logging()
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
+
 
 class LLMProvider(LLMProviderBase):
     def __init__(self, config):
@@ -25,23 +35,117 @@ class LLMProvider(LLMProviderBase):
         print("self.api_key", self.api_key)
         check_model_key("LLM", self.api_key)
         self.client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
+        # 启动HTTP服务器
+        self._start_http_server()
+
+
+    def _start_http_server(self):
+        """使用http.server实现图片上传服务"""
+        # 创建上传目录
+        self.upload_dir = "tmp"  # 保持与原有代码一致
+        os.makedirs(self.upload_dir, exist_ok=True)
+
+        class ImageUploadHandler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                if self.path != '/upload':
+                    self.send_error(404, "Endpoint not found")
+                    return
+
+                try:
+                    content_length = int(self.headers.get('Content-Length', 0))
+                except ValueError:
+                    self.send_error(400, "Invalid Content-Length")
+                    return
+
+                if content_length <= 0:
+                    self.send_error(400, "Empty request body")
+                    return
+
+                # 循环读取以确保获取所有数据
+                image_data = bytearray()
+                remaining = content_length
+                while remaining > 0:
+                    chunk = self.rfile.read(min(remaining, 8192))  # 每次读取8KB
+                    if not chunk:
+                        break  # 连接中断，数据不完整
+                    image_data.extend(chunk)
+                    remaining -= len(chunk)
+                
+                # 检查实际接收长度
+                if remaining != 0:
+                    self.send_error(400, f"数据不完整，预期 {content_length} 字节，收到 {len(image_data)} 字节")
+                    return
+
+                # 保存文件
+                try:
+                    file_path = os.path.join(self.server.upload_dir, "image_now.jpg")
+                    
+                    with open(file_path, 'wb') as f:
+                        f.write(image_data)
+                    # 保存为固定文件名
+                    fixed_path = os.path.join(self.server.upload_dir, "image.jpg")
+                    with open(fixed_path, 'wb') as f:
+                        f.write(image_data)
+                    print(f"图片已保存: {file_path}")
+                except Exception as e:
+                    self.send_error(500, f"保存失败: {str(e)}")
+
+
+        # 创建服务器实例
+        server_address = ('', 8003)
+        self.httpd = HTTPServer(server_address, ImageUploadHandler)
+        # 传递上传目录给handler
+        self.httpd.upload_dir = self.upload_dir
+
+        # 在独立线程中启动服务器
+        self.server_thread = threading.Thread(target=self.httpd.serve_forever)
+        self.server_thread.daemon = True  # 守护线程
+        self.server_thread.start()
+        print(f"[HTTP Server] Started on port 8003, upload dir: {self.upload_dir}")
+        
 
     def response(self, session_id, dialogue, conn = None):
-        if conn is not None:
-            url = f"http://{conn.client_ip}/jpg"
-        else:
-            url = 'http://192.168.248.171/jpg'  # 改成你自己的板子ip
-        response = requests.get(url, timeout=2000)
         use_pic = False
-        if response.status_code == 200:  
-            with open('tmp/image.jpg', 'wb') as file:  
-                file.write(response.content)  
-                print('文件下载成功')  
+        # 处理图片上传
+        try:
+            # if conn is not None:
+            #     url = f"http://{conn.client_ip}/jpg"
+            # else:
+            #     url = 'http://192.168.248.171/jpg'  # 改成你自己的板子ip
+            # # 发送请求
+            # response = requests.get(url, timeout=1000)
+            # use_pic = False
+            # if response.status_code == 200:  
+            #     with open('tmp/image.jpg', 'wb') as file:  
+            #         file.write(response.content)  
+            #         print('文件下载成功')
+            #         use_pic = True
+            # else: 
+            #     print('文件下载失败')
+            print("begin to take photo")
+            asyncio.run(send_iot_conn(conn, "Camera", "take_photo", {}))
+            # 这里可以添加代码来处理图片上传
+            print("begin to upload photo")
+            # 开启服务器, 获取图片
+            # 2. 等待并检查图片上传（最多等待5秒）
+            print("等待图片上传...")
+            start_time = time.time()
+            while not os.path.exists('tmp/image.jpg'):
+                time.sleep(0.2)
+                if time.time() - start_time > 5:
+                    print("等待图片超时")
+                    break
+            
+            # 3. 检查结果
+            if os.path.exists('tmp/image.jpg'):
                 use_pic = True
-        else: 
-            print('文件下载失败')
-
-
+                print("图片上传验证成功")
+            else:
+                print("未检测到上传的图片")
+        except Exception as e:
+            logger.bind(tag=TAG).error(f"Error in response generation: {e}")
+            return "【图片服务响应异常】"
+        
         if use_pic == True:
             img = cv2.imread('tmp/image.jpg')
             flipped_img = cv2.flip(img, 1)
@@ -93,6 +197,10 @@ class LLMProvider(LLMProviderBase):
 
         except Exception as e:
             logger.bind(tag=TAG).error(f"Error in response generation: {e}")
+
+        # 删除临时图片
+        if os.path.exists('tmp/image.jpg'):
+            os.remove('tmp/image.jpg')
 
     def response_with_functions(self, session_id, dialogue, functions=None):
         try:
