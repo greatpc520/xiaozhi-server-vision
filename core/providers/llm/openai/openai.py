@@ -48,17 +48,17 @@ class LLMProvider(LLMProviderBase):
         class ImageUploadHandler(BaseHTTPRequestHandler):
             def do_POST(self):
                 if self.path != '/upload':
-                    self.send_error(404, "Endpoint not found")
+                    logger.bind(tag=TAG).error(404, "Endpoint not found")
                     return
 
                 try:
                     content_length = int(self.headers.get('Content-Length', 0))
                 except ValueError:
-                    self.send_error(400, "Invalid Content-Length")
+                    logger.bind(tag=TAG).error(400, "Invalid Content-Length")
                     return
 
                 if content_length <= 0:
-                    self.send_error(400, "Empty request body")
+                    logger.bind(tag=TAG).error(400, "Empty request body")
                     return
 
                 # 循环读取以确保获取所有数据
@@ -73,7 +73,7 @@ class LLMProvider(LLMProviderBase):
                 
                 # 检查实际接收长度
                 if remaining != 0:
-                    self.send_error(400, f"数据不完整，预期 {content_length} 字节，收到 {len(image_data)} 字节")
+                    logger.bind(tag=TAG).error(400, f"数据不完整，预期 {content_length} 字节，收到 {len(image_data)} 字节")
                     return
 
                 # 保存文件
@@ -89,7 +89,8 @@ class LLMProvider(LLMProviderBase):
                         f.write(image_data)
                     print(f"图片已保存: tmp/image_now.jpg")
                 except Exception as e:
-                    self.send_error(500, f"保存失败: {str(e)}")
+                    logger.bind(tag=TAG).error(500, f"保存失败: {str(e)}")
+
 
         # 创建服务器实例
         server_address = ('', 8003)
@@ -139,9 +140,9 @@ class LLMProvider(LLMProviderBase):
             # 3. 检查结果
             if os.path.exists('tmp/image.jpg'):
                 use_pic = True
-                print("图片上传验证成功")
+                logger.bind(tag=TAG).info("图片上传验证成功")
             else:
-                print("未检测到上传的图片")
+                logger.bind(tag=TAG).error("未检测到上传的图片")
         except Exception as e:
             logger.bind(tag=TAG).error(f"Error in response generation: {e}")
             return "【图片服务响应异常】"
