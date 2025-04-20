@@ -32,3 +32,5 @@ nohup python -u app.py > output.log 2>&1 &
 - `> output.log`：将标准输出重定向到日志文件。
 - `2>&1`：将标准错误输出合并到标准输出。
 - `&`：将进程放到后台运行。
+使用原服务器的环境在输入`pip install --upgrade "volcengine-python-sdk[ark]"`和`pip install opencv-python`两个安装这两个库
+原程序地址https://github.com/xinnan-tech/xiaozhi-esp32-server, 我是用的是源码安装, 没有适配其他方式, 暂时不可以在服务器使用
