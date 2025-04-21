@@ -26,6 +26,10 @@
 conda activate xiaozhi-esp32-server
 nohup python -u app.py > output.log 2>&1 &
 ```
+终止程序, 使用`pa -aux`查看一下这个程序的PID, 之后使用kill命令终止这个程序
+![image](https://github.com/user-attachments/assets/91c39b10-8e86-4b1c-bc0e-74fc4654aa95)
+
+
 
 - `nohup`：忽略挂断信号（即使终端关闭，进程仍继续运行）。
 - `-u`：强制 Python 不缓冲输出（避免日志延迟）。
