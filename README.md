@@ -10,6 +10,8 @@
 
 使用原服务器的环境在输入`pip install --upgrade "volcengine-python-sdk[ark]"`和`pip install opencv-python`两个安装这两个库 原程序地址https://github.com/xinnan-tech/xiaozhi-esp32-server, 我是用的是源码安装, 没有适配其他方式, 暂时不可以在服务器使用
 
+提示cv2找不到不可以使用的时候可以`pip install pillow`然后把openai copy.py文件覆盖openai.py
+
 ## 服务器部署
 
 服务器使用两核两G的时候不建议使用本地的音频模型, 可以使用豆包的语音识别服务, https://console.volcengine.com/speech/app
